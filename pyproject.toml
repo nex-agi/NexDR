@@ -1,0 +1,94 @@
+[project]
+name = "nexdr"
+version = "0.1.0"
+description = "Nex Deep Research"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pyyaml>=6.0",
+    "jsonschema>=4.0.0",
+    "requests>=2.25.0",
+    "jinja2>=3.0.0",
+    "beautifulsoup4>=4.9.0",
+    "openai>=1.0.0",
+    "httpx[socks]>=0.25.0",
+    "mcp>=1.12.3",
+    "lark_oapi>=1.4.0",
+    "sqlmodel>=0.0.18",
+    "pytest>=7.0.0",
+    "streamlit>=1.48.0",
+    "plotly>=6.2.0",
+    "pandas>=2.3.1",
+    "langfuse>=3.2.3",
+    "tiktoken>=0.5.0",
+    "python-dotenv>=1.0.0",
+    "arxiv>=2.1.0",
+    "chardet>=5.2.0",
+    "pdfdeal>=1.0.2",
+    "markitdown[all]>=0.1.2",
+    "pymupdf>=1.26.3",
+    "asyncer>=0.0.8",
+    "rank-bm25>=0.2.2",
+    "jieba>=0.42.1",
+    "aiohttp>=3.12.15",
+    "volcengine>=1.0.198",
+    "fastmcp==2.11.3",
+    "fastapi>=0.116.1",
+    "uvicorn>=0.24.0",
+    "pydantic>=2.5.0",
+    "chainlit",
+    "jupyter-client>=8.6.3",
+    "diskcache>=5.6.3",
+    "bash-kernel>=0.10.0",
+    "asyncpg>=0.30.0",
+    "nexau @git+https://github.com/nex-agi/nexau",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0.0", "black>=22.0.0", "flake8>=5.0.0", "mypy>=1.0.0"]
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = [".", "src"]
+include = ["src*"]
+
+[tool.setuptools.package-dir]
+"" = "."
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.0.0",
+    "black>=22.0.0",
+    "flake8>=5.0.0",
+    "pre-commit>=4.3.0",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py312']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[dependency-groups]
+dev = [
+    "pytest-asyncio>=1.1.0",
+    "types-requests>=2.32.4.20250809",
+]
+
+[project.scripts]
+start = "server:main"

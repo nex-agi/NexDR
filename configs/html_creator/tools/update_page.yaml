@@ -1,0 +1,29 @@
+name: update_page
+description: >-
+  Update an existing page in the HTML presentation/report.
+
+  Usage:
+  - Updates an existing page at the specified index position
+  - Requires page index, action description, and HTML content
+  - Dedicated tool for page update operations
+  - Returns success confirmation message with the page index upon completion
+  - HTML content should be well-formed and compatible with the presentation structure
+
+input_schema:
+  type: object
+  properties:
+    index:
+      type: integer
+      description: The index position of the page to be updated
+    action_description:
+      type: string
+      description: Description of the action being performed on the page
+    html_content:
+      type: string
+      description: The HTML content to replace the existing page content
+  required:
+    - index
+    - action_description
+    - html_content
+  additionalProperties: false
+  $schema: http://json-schema.org/draft-07/schema#

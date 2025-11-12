@@ -1,0 +1,13 @@
+name: continue_judge_agent
+max_context_tokens: 120000
+system_prompt: continue_judge.md
+system_prompt_type: jinja
+tool_call_mode: xml
+llm_config:
+  temperature: 0.3
+  max_tokens: 4096
+  timeout: 300
+middlewares:
+  - import: nexdr.agents.hooks:LoggingMiddleware
+    params:
+      log_model_calls: true

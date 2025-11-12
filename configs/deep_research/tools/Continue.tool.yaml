@@ -1,0 +1,17 @@
+name: continue_research
+description: |
+  Deep Research Continuation Tool
+  
+  This tool is used internally by the deep research finish judge hook to provide system reminders
+  when the research process needs to continue or when it ends unexpectedly without proper completion.
+  
+  The tool returns formatted system reminder messages to guide the agent towards proper completion
+  of the research task, specifically emphasizing the need to use the ReportWrite tool for final output.
+  
+  This tool requires no input parameters and automatically generates the appropriate system reminder.
+
+input_schema:
+  type: object
+  properties: {}
+  additionalProperties: false
+  $schema: http://json-schema.org/draft-07/schema#

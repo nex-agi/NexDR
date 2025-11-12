@@ -1,0 +1,12 @@
+name: markdown_report_writer
+max_context_tokens: 120000
+system_prompt: report_writer.md
+system_prompt_type: jinja
+llm_config:
+  temperature: 0.6
+  max_tokens: 16384
+  timeout: 600
+middlewares:
+  - import: nexdr.agents.hooks:LoggingMiddleware
+    params:
+      log_model_calls: true

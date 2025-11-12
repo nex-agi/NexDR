@@ -1,0 +1,15 @@
+name: finish
+description: >-
+  Mark the completion of HTML report/presentation generation.
+
+  Usage:
+  - No input parameters required
+  - No output returned
+  - Signals that the report generation process has been completed
+  - Used to indicate the end of the workflow trajectory
+  - Call this tool when all HTML pages have been created and the presentation is ready
+
+input_schema:
+  type: object
+  additionalProperties: false
+  $schema: http://json-schema.org/draft-07/schema#

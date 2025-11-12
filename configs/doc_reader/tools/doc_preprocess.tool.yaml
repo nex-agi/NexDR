@@ -1,0 +1,36 @@
+name: DocPreprocess
+description: >-
+  Preprocess various document types and convert them to markdown format.
+
+  Supported document formats:
+  - Web pages (HTML)
+  - PDF documents
+  - Microsoft Office documents (Word .doc/.docx, PowerPoint .ppt/.pptx, Excel .xls/.xlsx)
+  - Text files (.txt, .md)
+  - Other common document formats
+
+  Input types:
+  1. Web URL: Direct URL to fetch document from internet
+  2. Local file path: Path to document stored locally
+  3. Document ID: Numeric ID (1, 2, 3, etc.) returned by search tools
+
+  Processing behavior:
+  - If document is short: returns complete markdown contents
+  - If document is too long: returns table of contents (TOC) mapping each chunk ID to its internal TOC, plus first 3 chunks
+
+input_schema:
+  type: object
+  properties:
+    input:
+      type: string
+      description: |
+        Input can be one of three types:
+        1. Web URL (e.g., "https://example.com/document.pdf")
+        2. Local file path (e.g., "/path/to/document.docx")
+        3. Document ID from search tools (e.g., "1", "2", "3")
+        
+        The tool will automatically detect the input type and process accordingly.
+  required:
+    - input
+  additionalProperties: false
+  $schema: http://json-schema.org/draft-07/schema#

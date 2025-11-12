@@ -1,0 +1,30 @@
+name: HtmlCreatorAgent
+max_context_tokens: 120000
+system_prompt: html_creator_agent.md
+system_prompt_type: jinja
+tool_call_mode: xml
+llm_config:
+  temperature: 0.7
+  max_tokens: 8192
+tools:
+  - name: initialize_design
+    yaml_path: ./tools/initialize_design.yaml
+    binding: nexdr.agents.html_creator.initialize_design:initialize_design
+  - name: insert_page
+    yaml_path: ./tools/insert_page.yaml
+    binding: nexdr.agents.html_creator.insert_page:insert_page
+  - name: update_page
+    yaml_path: ./tools/update_page.yaml
+    binding: nexdr.agents.html_creator.update_page:update_page
+  - name: search_images
+    yaml_path: ./tools/search_image.yaml
+    binding: nexdr.agents.deep_research.serper_search:search_images
+  - name: finish
+    yaml_path: ./tools/finish.yaml
+    binding: nexdr.agents.html_creator.finish:finish
+stop_tools: [finish]
+sub_agents: []
+middlewares:
+  - import: nexdr.agents.hooks:LoggingMiddleware
+    params:
+      log_model_calls: true

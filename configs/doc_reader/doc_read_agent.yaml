@@ -1,0 +1,29 @@
+name: VisitPage
+max_context_tokens: 120000
+system_prompt: doc_read_agent.md
+system_prompt_type: jinja
+tool_call_mode: xml
+llm_config:
+  temperature: 0.7
+  max_tokens: 8192
+global_storage:
+  agentic_doc_read_token_limit: 100000
+  doc_chunk_size: 5000
+tools:
+  - name: DocPreprocess
+    yaml_path: ./tools/doc_preprocess.tool.yaml
+    binding: nexdr.agents.doc_reader.doc_preprocess:doc_preprocess
+  - name: ImageCaption
+    yaml_path: ./tools/image_caption.tool.yaml
+    binding: nexdr.agents.doc_reader.image_caption:image_caption_tool
+  - name: DocChunkRetrieval
+    yaml_path: ./tools/doc_chunk_retrieval.tool.yaml
+    binding: nexdr.agents.doc_reader.retrieval:doc_bm25_retrieval
+  - name: DocChunkRead
+    yaml_path: ./tools/doc_chunk_read.tool.yaml
+    binding: nexdr.agents.doc_reader.reader:doc_reader
+sub_agents: []
+middlewares:
+  - import: nexdr.agents.hooks:LoggingMiddleware
+    params:
+      log_model_calls: true

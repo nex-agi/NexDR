@@ -1,0 +1,25 @@
+name: ImageCaption
+description: >-
+  Analyze an image and answer specific queries about it, plus provide a brief description.
+
+  Usage:
+  - Input an image URL or local image path
+  - Provide a specific query about the image
+  - Returns an answer to the query and a brief description of the image
+  - Supports various image formats (PNG, JPG, GIF, etc.)
+  - Useful for understanding visual content in documents
+
+input_schema:
+  type: object
+  properties:
+    input:
+      type: string
+      description: URL of the image or local file path to the image
+    query:
+      type: string
+      description: Specific question or query about the image content
+  required:
+    - input
+    - query
+  additionalProperties: false
+  $schema: http://json-schema.org/draft-07/schema#

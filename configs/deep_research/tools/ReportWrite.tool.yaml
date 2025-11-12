@@ -1,0 +1,16 @@
+name: handoff_to_report_writer
+description: |
+  Handoff to Report Writer Tool
+  
+  ## Core Mission
+  Transfer control to the report writer agent to handle report generation tasks. This tool simply hands off the current context and task to the specialized report writer without requiring any additional parameters.
+  
+  ## Usage
+  - No input parameters required
+  - Automatically transfers current research context and user requirements to report writer
+  - Report writer will handle all formatting, structure, and content generation requirements
+
+input_schema:
+  type: object
+  additionalProperties: false
+  $schema: http://json-schema.org/draft-07/schema#

@@ -1,0 +1,29 @@
+name: DocChunkRetrieval
+description: >-
+  Use BM25 retrieval to find document chunks related to a query from a specific document.
+
+  Usage:
+  - Search for relevant document chunks using BM25 algorithm within a specified document
+  - Input a query and document ID to find related content
+  - Returns top-k most relevant chunks with scores and snippets from the target document
+  - Useful for finding specific information in large documents when you know which document to search
+  - Requires both query and document ID to perform targeted retrieval
+
+input_schema:
+  type: object
+  properties:
+    query:
+      type: string
+      description: The query to search for in the document chunks
+    doc_id:
+      type: integer
+      description: The unique identifier of the target document to search within. Only chunks from this specific document will be considered for retrieval
+    topk:
+      type: integer
+      description: Number of top relevant chunks to return (optional, default=5)
+      default: 5
+  required:
+    - query
+    - doc_id
+  additionalProperties: false
+  $schema: http://json-schema.org/draft-07/schema#

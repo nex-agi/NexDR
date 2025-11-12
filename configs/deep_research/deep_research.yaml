@@ -1,0 +1,42 @@
+name: deep_research_agent
+max_context_tokens: 120000
+system_prompt: deep_research.md
+system_prompt_type: jinja
+tool_call_mode: xml
+llm_config:
+  temperature: 0.6
+  max_tokens: 16384
+  timeout: 600
+tools:
+  - name: Search
+    yaml_path: ./tools/Search.tool.yaml
+    binding: nexdr.agents.deep_research.search:search
+  - name: TodoWrite
+    yaml_path: ./tools/TodoWrite.tool.yaml
+    binding: nexau.archs.tool.builtin.todo_write:todo_write
+  - name: RunCode
+    yaml_path: ./tools/RunCode.tool.yaml
+    binding: nexau.archs.tool.builtin.run_code_tool:run_code_tool
+  - name: handoff_to_report_writer
+    yaml_path: ./tools/ReportWrite.tool.yaml
+    binding: nexdr.agents.deep_research.handoff_to_reporter:handoff_to_report_writer
+sub_agents:
+  - name: VisitPage
+    config_path: ../doc_reader/doc_read_agent.yaml
+stop_tools: [handoff_to_report_writer]
+middlewares:
+  - import: nexdr.agents.hooks:LoggingMiddleware
+    params:
+      log_model_calls: true
+  - import: nexdr.agents.hooks:TodoAndContinueMiddleware
+    params:
+      todo_validator_agent_config_path: ${this_file_dir}/todo_validator.yaml
+      continue_judge_agent_config_path: ${this_file_dir}/continue_judge.yaml
+      max_validation_times: 5
+      validate_every_n_calls: 3
+      skip_first_n_calls: 0
+      max_continue_times: 5
+      max_context_tokens: 100000
+      keep_last_n_user_messages: 3
+      compressed_preview_chars: 200
+      min_compress_tokens: 500

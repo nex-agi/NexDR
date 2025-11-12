@@ -1,0 +1,29 @@
+name: insert_page
+description: >-
+  Insert a new page in the HTML presentation/report.
+
+  Usage:
+  - Inserts a new page at the specified index position
+  - Requires page index, action description, and HTML content
+  - Dedicated tool for page insertion operations
+  - Returns success confirmation message with the page index upon completion
+  - HTML content should be well-formed and compatible with the presentation structure
+
+input_schema:
+  type: object
+  properties:
+    index:
+      type: integer
+      description: The index position where the page should be inserted or updated
+    action_description:
+      type: string
+      description: Description of the action being performed on the page
+    html_content:
+      type: string
+      description: The HTML content for the page to be inserted or updated
+  required:
+    - index
+    - action_description
+    - html_content
+  additionalProperties: false
+  $schema: http://json-schema.org/draft-07/schema#

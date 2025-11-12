@@ -1,0 +1,25 @@
+name: DocChunkRead
+description: >-
+  Read the complete content of a specific document chunk by its index.
+
+  Usage:
+  - Input a document ID and chunk index to retrieve the full content of that chunk
+  - chunk_id is an integer representing the chunk index (0-based) within the document
+  - Returns the complete text content within the specified chunk
+  - Useful for getting detailed information after finding relevant chunks through retrieval
+  - Requires both document ID and chunk index to perform targeted retrieval
+
+input_schema:
+  type: object
+  properties:
+    doc_id:
+      type: integer
+      description: The unique identifier of the target document from which to read the chunk
+    chunk_id:
+      type: integer
+      description: The index of the document chunk to read (0-based integer representing which chunk in the document)
+  required:
+    - doc_id
+    - chunk_id
+  additionalProperties: false
+  $schema: http://json-schema.org/draft-07/schema#

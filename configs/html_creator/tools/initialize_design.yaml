@@ -1,0 +1,40 @@
+name: initialize_design
+description: >-
+  Initialize HTML report/slide design with specified parameters.
+
+  Usage:
+  - Creates HTML reports or slides with custom dimensions and content
+  - Requires slide information including title, description, and dimensions
+  - Generates structured HTML output for presentation or reporting purposes
+  - Returns success confirmation message upon completion
+
+input_schema:
+  type: object
+  properties:
+    description:
+      type: string
+      description: The description or content for the slide/report
+    height:
+      type: integer
+      description: The height dimension for the HTML output in pixels
+    slide_name:
+      type: string
+      description: The name identifier for the slide
+    slide_num:
+      type: integer
+      description: The slide number in the presentation sequence
+    title:
+      type: string
+      description: The title of the slide/report
+    width:
+      type: integer
+      description: The width dimension for the HTML output in pixels
+  required:
+    - description
+    - height
+    - slide_name
+    - slide_num
+    - title
+    - width
+  additionalProperties: false
+  $schema: http://json-schema.org/draft-07/schema#
