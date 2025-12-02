@@ -60,11 +60,12 @@ LLM_API_KEY=your_openai_api_key_here
 LLM_BASE_URL=your_openai_base_url_here
 LLM_MODEL=model_name_you_used
 
-# 网络搜索（必需）
+# 网络搜索与 Serper 抓取（必需）
 SERPER_API_KEY=your_serper_api_key_here
 
-# 网页解析（必需）
+# 网页解析（至少选择一种解析器）
 JINA_API_KEY=your_jina_api_key_here
+DOC_READER_PROVIDERS=jina,serper
 
 # Langfuse 追踪（可选）
 LANGFUSE_PUBLIC_KEY=your_langfuse_public_key
