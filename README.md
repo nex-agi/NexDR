@@ -60,11 +60,12 @@ LLM_API_KEY=your_openai_api_key_here
 LLM_BASE_URL=your_openai_base_url_here
 LLM_MODEL=model_name_you_used
 
-# For web search (required)
+# For web search and Serper document scraping (required)
 SERPER_API_KEY=your_serper_api_key_here
 
-# For document parsing (required)
+# For document parsing (choose at least one provider)
 JINA_API_KEY=your_jina_api_key_here
+DOC_READER_PROVIDERS=jina,serper
 
 # For Langfuse tracing (optional)
 LANGFUSE_PUBLIC_KEY=your_langfuse_public_key

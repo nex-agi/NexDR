@@ -24,7 +24,7 @@ from nexdr.agents.tool_types import create_error_tool_result
 from nexdr.agents.tool_types import create_success_tool_result
 from nexdr.agents.doc_reader.chunker import split_text_into_chunks
 from nexau.archs.main_sub.agent_context import GlobalStorage
-from nexdr.agents.doc_reader.jina_parser import FileParser
+from nexdr.agents.doc_reader.file_parser import FileParser
 
 
 logger = logging.getLogger(__name__)

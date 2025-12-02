@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import asyncio
+import http.client
+import json
 import logging
 import mimetypes
 import os
@@ -24,6 +26,7 @@ from urllib import request as urllib_request
 logger = logging.getLogger(__name__)
 
 JINA_READER_ENDPOINT = "https://r.jina.ai/"
+SERPER_SCRAPE_HOST = "scrape.serper.dev"
 DEFAULT_SUFFIX = ".txt"
 TEXT_EXTENSIONS = {
     ".txt",
@@ -42,13 +45,15 @@ TEXT_EXTENSIONS = {
 
 class FileParser:
     """
-    Use Jina's universal reader to fetch textual content from URLs or read local files.
+    Fetch textual content from URLs or local files using configurable providers.
     Returns a tuple of (success, content, suffix).
     """
 
     def __init__(self, timeout: float = 45.0) -> None:
         self.timeout = timeout
-        self.api_key = os.getenv("JINA_API_KEY")
+        self.jina_api_key = os.getenv("JINA_API_KEY")
+        self.serper_api_key = os.getenv("SERPER_API_KEY")
+        self.providers = self._load_provider_order()
 
     async def parse(self, url_or_local_file: str) -> Tuple[bool, str, str]:
         if self._looks_like_url(url_or_local_file):
@@ -56,12 +61,34 @@ class FileParser:
         return await self._parse_local(url_or_local_file)
 
     async def _parse_remote(self, url: str) -> Tuple[bool, str, str]:
-        if not self.api_key:
+        errors = []
+        for provider in self.providers:
+            if provider == "jina":
+                success, content, suffix = await self._parse_remote_with_jina(url)
+            elif provider == "serper":
+                success, content, suffix = await self._parse_remote_with_serper(url)
+            else:
+                logger.warning("Unknown document parser provider: %s", provider)
+                errors.append(f"{provider}: unsupported provider")
+                continue
+
+            if success:
+                return True, content, suffix
+            errors.append(f"{provider}: {content}")
+
+        error_msg = (
+            "Failed to fetch document with available providers. "
+            + " | ".join(errors)
+        )
+        return False, error_msg, DEFAULT_SUFFIX
+
+    async def _parse_remote_with_jina(self, url: str) -> Tuple[bool, str, str]:
+        if not self.jina_api_key:
             error_msg = (
                 "JINA_API_KEY environment variable is required but not set. "
                 "Please set it with your Jina API key."
             )
-            logger.error(error_msg)
+            logger.warning(error_msg)
             return False, error_msg, DEFAULT_SUFFIX
 
         jina_url = self._build_jina_reader_url(url)
@@ -69,7 +96,7 @@ class FileParser:
 
         try:
             raw_bytes = await asyncio.to_thread(
-                self._fetch_bytes, jina_url, self.timeout, self.api_key
+                self._fetch_bytes, jina_url, self.timeout, self.jina_api_key
             )
         except Exception as exc:
             logger.exception("Failed to fetch remote document: %s", url)
@@ -85,6 +112,57 @@ class FileParser:
             return False, "Empty content returned from Jina reader", DEFAULT_SUFFIX
 
         return True, content, DEFAULT_SUFFIX
+
+    async def _parse_remote_with_serper(self, url: str) -> Tuple[bool, str, str]:
+        if not self.serper_api_key:
+            error_msg = (
+                "SERPER_API_KEY environment variable is required but not set. "
+                "Please set it with your Serper API key."
+            )
+            logger.warning(error_msg)
+            return False, error_msg, DEFAULT_SUFFIX
+
+        payload = json.dumps({"url": url})
+        headers = {
+            "X-API-KEY": self.serper_api_key,
+            "Content-Type": "application/json",
+        }
+        logger.info("Fetching document via Serper scrape: %s", url)
+
+        try:
+            status, raw_bytes = await asyncio.to_thread(
+                self._fetch_serper_bytes,
+                payload,
+                headers,
+                self.timeout,
+            )
+        except Exception as exc:
+            logger.exception("Failed to fetch remote document via Serper: %s", url)
+            return False, f"Failed to fetch via Serper {url}: {exc}", DEFAULT_SUFFIX
+
+        if status >= 400:
+            logger.error(
+                "Serper scrape returned status %s for %s",
+                status,
+                url,
+            )
+            return (
+                False,
+                f"Serper scrape error (status {status})",
+                DEFAULT_SUFFIX,
+            )
+
+        try:
+            decoded = raw_bytes.decode("utf-8")
+        except UnicodeDecodeError:
+            decoded = raw_bytes.decode("utf-8", errors="ignore")
+
+        parsed = self._extract_text_from_serper_response(decoded)
+        if not parsed.strip():
+            logger.warning("Empty content returned from Serper scrape for %s", url)
+            return False, "Empty content returned from Serper scrape", DEFAULT_SUFFIX
+
+        return True, parsed, ".md"
 
     async def _parse_local(self, path_str: str) -> Tuple[bool, str, str]:
         path = Path(path_str).expanduser().resolve()
@@ -135,6 +213,20 @@ class FileParser:
             return response.read()
 
     @staticmethod
+    def _fetch_serper_bytes(
+        payload: str, headers: dict, timeout: float
+    ) -> Tuple[int, bytes]:
+        conn = http.client.HTTPSConnection(SERPER_SCRAPE_HOST, timeout=timeout)
+        try:
+            conn.request("POST", "/", body=payload, headers=headers)
+            res = conn.getresponse()
+            status = res.status
+            data = res.read()
+        finally:
+            conn.close()
+        return status, data
+
+    @staticmethod
     def _build_jina_reader_url(url: str) -> str:
         if url.startswith(JINA_READER_ENDPOINT):
             return url
@@ -144,6 +236,37 @@ class FileParser:
     def _is_probably_text(path: Path) -> bool:
         mime_type, _ = mimetypes.guess_type(path.name)
         return mime_type is not None and mime_type.startswith("text")
+
+    @staticmethod
+    def _load_provider_order() -> list[str]:
+        providers_env = os.getenv("DOC_READER_PROVIDERS")
+        if not providers_env:
+            return ["jina", "serper"]
+        providers = [
+            provider.strip().lower()
+            for provider in providers_env.split(",")
+            if provider.strip()
+        ]
+        return providers or ["jina", "serper"]
+
+    @staticmethod
+    def _extract_text_from_serper_response(decoded_body: str) -> str:
+        try:
+            parsed_json = json.loads(decoded_body)
+        except json.JSONDecodeError:
+            return decoded_body
+
+        if not isinstance(parsed_json, dict):
+            return decoded_body
+
+        if isinstance(parsed_json.get("markdown"), str):
+            return parsed_json["markdown"]
+        if isinstance(parsed_json.get("content"), str):
+            return parsed_json["content"]
+        if isinstance(parsed_json.get("text"), str):
+            return parsed_json["text"]
+
+        return decoded_body
 
 
 if __name__ == "__main__":
