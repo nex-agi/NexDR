@@ -97,6 +97,15 @@ python quick_start.py \
   --output_dir workspaces/healthcare_research
 ```
 
+同时生成 Markdown 和 HTML 报告：
+
+```bash
+python quick_start.py \
+  --query "分析人工智能对医疗健康的影响" \
+  --report_format markdown+html \
+  --output_dir workspaces/healthcare_research
+```
+
 ### 命令行参数
 
 - `--query`: 您的研究问题（必需）

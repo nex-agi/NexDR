@@ -97,6 +97,15 @@ python quick_start.py \
   --output_dir workspaces/healthcare_research
 ```
 
+Generate a markdown and html report:
+
+```bash
+python quick_start.py \
+  --query "Analyze the impact of AI on healthcare" \
+  --report_format markdown+html \
+  --output_dir workspaces/healthcare_research
+```
+
 ### Command-Line Arguments
 
 - `--query`: Your research question (required)
