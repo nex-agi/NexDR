@@ -176,6 +176,18 @@ def agent_run(query: str, report_format: str, output_dir: str):
             deep_research_trace_history, context, global_storage
         )
         citation_path = None
+    elif report_format == "markdown+html":
+        markdown_report_path, citation_path = markdown_report_agent_run(
+            deep_research_trace_history, context, global_storage
+        )
+        html_report_path = html_report_agent_run(
+            deep_research_trace_history, context, global_storage
+        )
+        citation_path = None
+        report_path = {
+            "markdown": markdown_report_path,
+            "html": html_report_path,
+        }
     else:
         raise ValueError(f"Invalid report format: {report_format}")
     logger.info(f"Report is saved at: {report_path}")
@@ -214,8 +226,8 @@ def main():
         "--report_format",
         type=str,
         default="markdown",
-        choices=["markdown", "html"],
-        help="Report format: markdown, html",
+        choices=["markdown", "html", "markdown+html"],
+        help="Report format: markdown, html, markdown+html",
     )
     parser.add_argument(
         "--output_dir",
