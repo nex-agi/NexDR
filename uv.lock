@@ -2427,8 +2427,8 @@ wheels = [
 
 [[package]]
 name = "nexau"
-version = "0.3.3"
-source = { git = "https://github.com/nex-agi/nexau#889cb5f75a336c2e4da364f97851bbc0f141e8ab" }
+version = "0.3.4"
+source = { git = "https://github.com/nex-agi/nexau#76a0b32ace365605fb2029b6975b0eff6f958fd4" }
 dependencies = [
     { name = "anthropic" },
     { name = "beautifulsoup4" },
